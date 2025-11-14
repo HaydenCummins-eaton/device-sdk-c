@@ -52,6 +52,7 @@ static bool values_exceed_threshold (const devsdk_commandresult *newvals, const 
     iot_log_debug (logger, "No threshold set or new/old values are null, publishing event.");
     return true;
   }
+  bool publish = false;
   for (int i = 0; i < nvals; i++)
   {
     if(newvals[i].value != NULL && oldvals[i].value != NULL){
@@ -65,21 +66,22 @@ static bool values_exceed_threshold (const devsdk_commandresult *newvals, const 
         if (fabs(curr_val - prev_val) > threshold)
         {
           iot_log_debug (logger, "Value change %f exceeds threshold %f publishing event.", fabs(curr_val - prev_val), threshold);
-          return true;
+          publish = true;
         }
       }else{
         if(!iot_data_equal(newvals[i].value, oldvals[i].value))
         {
           iot_log_debug (logger, "Non-numeric value changed, publishing event.");
-          return true;
+          publish = true;
         }
       }
       iot_data_free (curr_val_cast);
       iot_data_free (prev_val_cast);
+      return publish;
     }
   }
   iot_log_debug (logger, "No values exceeded threshold, not publishing event.");
-  return false;
+  return publish;
 }
   
 
