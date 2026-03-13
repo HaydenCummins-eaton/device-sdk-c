@@ -90,7 +90,7 @@ edgex_event_cooked *edgex_data_process_event
   edgex_event_cooked *result = NULL;
   bool useCBOR = false;
   uint64_t timenow = iot_time_nsecs ();
-
+  //somewhere in here implement ReadingUnits
   for (uint32_t i = 0; i < commandinfo->nreqs; i++)
   {
     if (commandinfo->pvals[i]->type.type == IOT_DATA_BINARY)
@@ -127,6 +127,16 @@ edgex_event_cooked *edgex_data_process_event
   strcat (result->path, device->name);
   strcat (result->path, "/");
   strcat (result->path, commandinfo->name);
+
+  //check ReadingUnits configuration
+  bool includeUnits = false;
+  if (device && device->devimpl && device->devimpl->service) {
+    //access the ReadingUnits configuration
+    const iot_data_t *sdkconf = device->devimpl->service->config.sdkconf;
+    if (sdkconf) {
+        includeUnits = iot_data_string_map_get_bool(sdkconf, "Writable/Reading/ReadingUnits", false);
+    }
+  }
 
   iot_data_t *rvec = iot_data_alloc_vector (commandinfo->nreqs);
   for (uint32_t i = 0; i < commandinfo->nreqs; i++)
