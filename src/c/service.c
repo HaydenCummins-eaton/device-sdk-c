@@ -1400,7 +1400,7 @@ void devsdk_post_readings
   if (command)
   {
     edgex_event_cooked *event = edgex_data_process_event
-      (dev, command, values, tags, svc->config.device.datatransform, svc->reduced_events);
+      (dev, command, values, tags, svc->config.device.datatransform, svc->reduced_events, svc);
 
     if (event)
     {

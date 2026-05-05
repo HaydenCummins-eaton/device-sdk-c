@@ -83,14 +83,15 @@ edgex_event_cooked *edgex_data_process_event
   devsdk_commandresult *values,
   iot_data_t *tags,
   bool doTransforms,
-  bool reducedEvents
+  bool reducedEvents,
+  devsdk_service_t *svc
 )
 {
   char *eventId;
   edgex_event_cooked *result = NULL;
   bool useCBOR = false;
   uint64_t timenow = iot_time_nsecs ();
-  //somewhere in here implement ReadingUnits
+  
   for (uint32_t i = 0; i < commandinfo->nreqs; i++)
   {
     if (commandinfo->pvals[i]->type.type == IOT_DATA_BINARY)
@@ -130,13 +131,9 @@ edgex_event_cooked *edgex_data_process_event
 
   //check ReadingUnits configuration
   bool includeUnits = false;
-  if (device && device->devimpl && device->devimpl->service) {
-    //access the ReadingUnits configuration
-    const iot_data_t *sdkconf = device->devimpl->service->config.sdkconf;
-    if (sdkconf) {
-        includeUnits = iot_data_string_map_get_bool(sdkconf, "Writable/Reading/ReadingUnits", false);
-    }
-  }
+  includeUnits = iot_data_string_map_get_bool(svc->config.sdkconf, "Writable/Reading/ReadingUnits", false);
+  printf("DEBUG: CHECKING REGISTRY includeUnits = %s\n", includeUnits ? "true" : "false");
+  
 
   iot_data_t *rvec = iot_data_alloc_vector (commandinfo->nreqs);
   for (uint32_t i = 0; i < commandinfo->nreqs; i++)
@@ -158,6 +155,20 @@ edgex_event_cooked *edgex_data_process_event
       iot_data_string_map_add (rmap, "resourceName", iot_data_alloc_string (commandinfo->reqs[i].resource->name, IOT_DATA_REF));
     }
     iot_data_string_map_add (rmap, "valueType", iot_data_alloc_string (edgex_typecode_tostring (tc), IOT_DATA_REF));
+    // Add units field if ReadingUnits is enabled and the device resource has units configured
+    printf("DEBUG: includeUnits = %s\n", includeUnits ? "true" : "false");
+    printf("DEBUG: commandinfo->pvals[%d]->units = %s\n", i, 
+           commandinfo->pvals[i]->units ? commandinfo->pvals[i]->units : "NULL");
+
+    if (includeUnits && commandinfo->pvals[i]->units && *commandinfo->pvals[i]->units)
+    {
+      printf("DEBUG: Adding units field: %s\n", commandinfo->pvals[i]->units);
+      iot_data_string_map_add (rmap, "units", iot_data_alloc_string (commandinfo->pvals[i]->units, IOT_DATA_REF));
+    }
+    else
+    {
+      printf("DEBUG: NOT adding units field\n");
+    }
     // Would check that reading and event origins are different.
     // But event origin will be set to "timenow" below, so we check for that instead.
     if ((!reducedEvents) || ((values[i].origin != 0) && (values[i].origin != timenow)))
