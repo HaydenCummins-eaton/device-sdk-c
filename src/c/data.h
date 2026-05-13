@@ -40,7 +40,7 @@ edgex_event_cooked *edgex_data_process_event
   iot_data_t *tags,
   bool doTransforms,
   bool reducedEvents,
-  devsdk_service_t *svc
+  bool includeUnits
 );
 
 void edgex_data_client_add_event (edgex_bus_t *bus, edgex_event_cooked *eventval, devsdk_metrics_t *metrics);

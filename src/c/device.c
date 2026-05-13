@@ -418,7 +418,7 @@ static edgex_event_cooked *edgex_device_runget2
     if (svc->userfns.gethandler (svc->userdata, dev->devimpl, cmdinfo->nreqs, cmdinfo->reqs, results, &tags, params, &e))
     {
       devsdk_error err = EDGEX_OK;
-      result = edgex_data_process_event (dev, cmdinfo, results, tags, svc->config.device.datatransform, svc->reduced_events, svc);
+      result = edgex_data_process_event (dev, cmdinfo, results, tags, svc->config.device.datatransform, svc->reduced_events, iot_data_string_map_get_bool(svc->config.sdkconf, "Writable/Reading/ReadingUnits", false));
 
       if (result)
       {
@@ -719,7 +719,7 @@ static edgex_event_cooked *edgex_device_runget3 (devsdk_service_t *svc, edgex_de
     if (svc->userfns.gethandler (svc->userdata, dev->devimpl, cmdinfo->nreqs, cmdinfo->reqs, results, &tags, params, &e))
     {
       devsdk_error err = EDGEX_OK;
-      result = edgex_data_process_event (dev, cmdinfo, results, tags, svc->config.device.datatransform, svc->reduced_events, svc);
+      result = edgex_data_process_event (dev, cmdinfo, results, tags, svc->config.device.datatransform, svc->reduced_events, iot_data_string_map_get_bool(svc->config.sdkconf, "Writable/Reading/ReadingUnits", false));
       if (result)
       {
         if (svc->config.device.updatelastconnected)

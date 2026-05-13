@@ -84,7 +84,7 @@ edgex_event_cooked *edgex_data_process_event
   iot_data_t *tags,
   bool doTransforms,
   bool reducedEvents,
-  devsdk_service_t *svc
+  bool includeUnits
 )
 {
   char *eventId;
@@ -129,12 +129,6 @@ edgex_event_cooked *edgex_data_process_event
   strcat (result->path, "/");
   strcat (result->path, commandinfo->name);
 
-  //check ReadingUnits configuration
-  bool includeUnits = false;
-  includeUnits = iot_data_string_map_get_bool(svc->config.sdkconf, "Writable/Reading/ReadingUnits", false);
-  printf("DEBUG: CHECKING REGISTRY includeUnits = %s\n", includeUnits ? "true" : "false");
-  
-
   iot_data_t *rvec = iot_data_alloc_vector (commandinfo->nreqs);
   for (uint32_t i = 0; i < commandinfo->nreqs; i++)
   {
@@ -156,18 +150,9 @@ edgex_event_cooked *edgex_data_process_event
     }
     iot_data_string_map_add (rmap, "valueType", iot_data_alloc_string (edgex_typecode_tostring (tc), IOT_DATA_REF));
     // Add units field if ReadingUnits is enabled and the device resource has units configured
-    printf("DEBUG: includeUnits = %s\n", includeUnits ? "true" : "false");
-    printf("DEBUG: commandinfo->pvals[%d]->units = %s\n", i, 
-           commandinfo->pvals[i]->units ? commandinfo->pvals[i]->units : "NULL");
-
     if (includeUnits && commandinfo->pvals[i]->units && *commandinfo->pvals[i]->units)
     {
-      printf("DEBUG: Adding units field: %s\n", commandinfo->pvals[i]->units);
       iot_data_string_map_add (rmap, "units", iot_data_alloc_string (commandinfo->pvals[i]->units, IOT_DATA_REF));
-    }
-    else
-    {
-      printf("DEBUG: NOT adding units field\n");
     }
     // Would check that reading and event origins are different.
     // But event origin will be set to "timenow" below, so we check for that instead.
