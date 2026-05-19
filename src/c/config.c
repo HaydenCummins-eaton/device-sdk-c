@@ -518,6 +518,7 @@ static void edgex_device_populateCommonConfigFromMap (edgex_device_config *confi
   config->device.provisionwatchersdir = iot_data_string_map_get_string (map, "Device/ProvisionWatchersDir");
   config->device.allowed_fails = iot_data_ui32 (iot_data_string_map_get (map, "Device/AllowedFails"));
   config->device.dev_downtime = iot_data_ui64 (iot_data_string_map_get (map, "Device/DeviceDownTimeout"));
+  config->device.reading_units = iot_data_bool (iot_data_string_map_get (map, DYN_PREFIX "Reading/ReadingUnits"));
 
   config->metrics.interval = iot_data_string_map_get_string (map, DYN_PREFIX "Telemetry/Interval");
   config->metrics.flags = iot_data_bool (iot_data_string_map_get (map, DYN_PREFIX "Telemetry/Metrics/EventsSent")) ? EX_METRIC_EVSENT : 0;

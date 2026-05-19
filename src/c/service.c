@@ -1420,7 +1420,7 @@ void devsdk_post_readings
   if (command)
   {
     edgex_event_cooked *event = edgex_data_process_event
-      (dev, command, values, tags, svc->config.device.datatransform, svc->reduced_events, iot_data_string_map_get_bool(svc->config.sdkconf, "Writable/Reading/ReadingUnits", false));
+      (dev, command, values, tags, svc->config.device.datatransform, svc->reduced_events, svc->config.device.reading_units);
 
     if (event)
     {
