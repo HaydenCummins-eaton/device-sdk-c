@@ -54,6 +54,7 @@ Reading:
   resourceName: String (name of the DeviceResource)
   profileName: String (name of the Device Profile)
   valueType: String
+  units: String (optional, present when ReadingUnits is enabled and configured)
 
 plus
 
@@ -91,7 +92,7 @@ edgex_event_cooked *edgex_data_process_event
   edgex_event_cooked *result = NULL;
   bool useCBOR = false;
   uint64_t timenow = iot_time_nsecs ();
-  
+
   for (uint32_t i = 0; i < commandinfo->nreqs; i++)
   {
     if (commandinfo->pvals[i]->type.type == IOT_DATA_BINARY)

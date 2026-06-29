@@ -61,7 +61,7 @@ iot_data_t *edgex_common_config_defaults (const char *svcname)
   iot_data_string_map_add (result, "Device/Discovery/Enabled", iot_data_alloc_bool (true));
   iot_data_string_map_add (result, "Device/Discovery/Interval", iot_data_alloc_ui32 (0));
   iot_data_string_map_add (result, "Device/MaxCmdOps", iot_data_alloc_ui32 (0));
-  
+
   iot_data_string_map_add (result, DYN_PREFIX "Reading/ReadingUnits", iot_data_alloc_bool (false));
 
   iot_data_string_map_add (result, DYN_PREFIX "Telemetry/Interval", iot_data_alloc_string ("30s", IOT_DATA_REF));
