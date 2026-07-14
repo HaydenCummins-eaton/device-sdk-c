@@ -620,8 +620,14 @@ void edgex_device_updateConf (void *p, const devsdk_nvpairs *config)
 
   iot_log_info (svc->logger, "Reconfiguring");
 
+  if (devsdk_nvpairs_value (config, DYN_PREFIX "Reading/ReadingUnits") == NULL)
+  {
+    iot_data_string_map_add (svc->config.sdkconf, DYN_PREFIX "Reading/ReadingUnits", iot_data_alloc_bool (false));
+  }
+
   edgex_device_overrideConfig_nvpairs (svc->config.sdkconf, config);
   edgex_device_populateConfigFromMap (&svc->config, svc->config.sdkconf);
+  svc->config.device.reading_units = iot_data_bool (iot_data_string_map_get (svc->config.sdkconf, DYN_PREFIX "Reading/ReadingUnits"));
 
   const char *lname = devsdk_nvpairs_value (config, DYN_PREFIX "LogLevel");
   if (lname)
@@ -750,6 +756,11 @@ static JSON_Value *edgex_device_config_toJson (devsdk_service_t *svc)
   json_object_set_uint (dobj, "EventQLength", svc->config.device.eventqlen);
   json_object_set_uint (dobj, "AllowedFails", svc->config.device.allowed_fails);
   json_object_set_uint (dobj, "DeviceDownTimeout", svc->config.device.dev_downtime);
+
+  JSON_Value *rval = json_value_init_object ();
+  JSON_Object *robj = json_value_get_object (rval);
+  json_object_set_boolean (robj, "ReadingUnits", svc->config.device.reading_units);
+  json_object_set_value (wobj, "Reading", rval);
 
   JSON_Value *lval = json_value_init_array ();
   JSON_Array *larr = json_value_get_array (lval);
